@@ -1,0 +1,193 @@
+{
+  "version": "1.1",
+  "domain": "General Insurance Underwriting",
+  "purpose": "Assist human underwriters by interpreting underwriting policy rules against unstructured applicant data",
+
+  "eligibility_rules": {
+    "hard_rejection_conditions": [
+      "confirmed fraud history",
+      "identity verification failure",
+      "blacklisted individual or asset",
+      "material non-disclosure after loss event",
+      "policy obtained after known loss"
+    ],
+    "manual_review_conditions": [
+      "missing identity details",
+      "incomplete asset ownership proof",
+      "conflicting applicant information",
+      "unclear asset usage declaration"
+    ]
+  },
+
+  "applicant_profile_rules": {
+    "high_risk_occupations": [
+      "delivery driver",
+      "commercial driver",
+      "cab driver",
+      "construction worker",
+      "heavy equipment operator",
+      "gig worker using personal vehicle"
+    ],
+    "medium_risk_occupations": [
+      "field technician",
+      "sales executive",
+      "frequent traveler"
+    ],
+    "low_risk_occupations": [
+      "office employee",
+      "government employee",
+      "retired individual"
+    ]
+  },
+
+  "asset_usage_rules": {
+    "usage_mismatch": {
+      "description": "Declared personal use but evidence of commercial or high-frequency usage",
+      "severity": "high",
+      "action": "manual_review"
+    },
+    "high_usage_indicators": [
+      "high annual mileage",
+      "continuous daily usage",
+      "night-time commercial usage",
+      "multi-user operation"
+    ]
+  },
+
+  "location_risk_rules": {
+    "high_risk_locations": [
+      "high traffic zone",
+      "high crime area",
+      "flood prone area",
+      "coastal low-lying region",
+      "industrial accident-prone zone"
+    ],
+    "medium_risk_locations": [
+      "urban congested area",
+      "mixed residential-commercial area"
+    ],
+    "location_risk_indicators": [
+      "frequent theft reports",
+      "poor road infrastructure",
+      "lack of secure parking",
+      "repeated accident history in locality"
+    ]
+  },
+
+  "claims_history_rules": {
+    "frequent_claimant_definition": {
+      "claims_count": 3,
+      "time_window_years": 3
+    },
+    "major_claim_definition": {
+      "threshold_amount": 200000
+    },
+    "high_risk_claim_types": [
+      "theft",
+      "fire",
+      "flood",
+      "third party injury",
+      "total loss"
+    ],
+    "suspicious_patterns": [
+      "claims clustered in short time period",
+      "repeated similar claim narratives",
+      "claims immediately after policy inception",
+      "same cause repeated across claims"
+    ]
+  },
+
+  "creditworthiness_rules": {
+    "high_risk_credit_score": {
+      "below": 600
+    },
+    "medium_risk_credit_score": {
+      "range": "600-650"
+    },
+    "low_risk_credit_score": {
+      "above": 650
+    },
+    "missing_credit_data": {
+      "action": "manual_review"
+    }
+  },
+
+  "inspection_and_external_reports": {
+    "negative_indicators": [
+      "poor maintenance",
+      "temporary or makeshift repairs",
+      "inspection contradicts declared condition",
+      "evidence of prior unrepaired damage"
+    ],
+    "conflict_detection": [
+      "inspection report conflicts with claim description",
+      "repair estimate inconsistent with damage severity",
+      "timeline inconsistency between reports"
+    ]
+  },
+
+  "compounded_risk_rules": {
+    "high_severity_combinations": [
+      "high risk occupation + frequent claims",
+      "theft claims + high crime location",
+      "low credit score + major loss history",
+      "usage mismatch + inspection contradictions"
+    ],
+    "medium_severity_combinations": [
+      "medium risk occupation + urban congestion",
+      "multiple medium severity claims",
+      "credit score borderline + high usage"
+    ]
+  },
+
+  "risk_scoring_guidelines": {
+    "scoring_method": "derived_from_rule_triggers",
+    "low_risk": {
+      "description": "Isolated or minor risk indicators",
+      "max_triggered_rules": 1,
+      "score_range": "0-30"
+    },
+    "medium_risk": {
+      "description": "Multiple moderate risk indicators or one compounded risk",
+      "max_triggered_rules": 3,
+      "score_range": "31-70"
+    },
+    "high_risk": {
+      "description": "Major violations, frequent claims, or multiple compounded risks",
+      "min_triggered_rules": 4,
+      "score_range": "71-100"
+    }
+  },
+
+  "decision_support_guidelines": {
+    "recommendation_types": [
+      "standard_acceptance",
+      "acceptance_with_conditions",
+      "manual_underwriting_review",
+      "policy_not_recommended"
+    ],
+    "manual_review_triggers": [
+      "conflicting data across sources",
+      "borderline eligibility conditions",
+      "compounded risk indicators",
+      "missing or ambiguous information",
+      "suspicious claim patterns"
+    ]
+  },
+
+  "output_requirements": {
+    "required_fields": [
+      "policy_compliance_status",
+      "identified_risks",
+      "triggered_rules",
+      "review_flags",
+      "risk_score",
+      "recommendation"
+    ],
+    "policy_compliance_status_values": [
+      "Compliant",
+      "Partially Compliant",
+      "Non-Compliant"
+    ]
+  }
+}
