@@ -3,3 +3,5 @@ venv/
 __pycache__/
 *.pyc
 app2.py
+.DS_Store
+rag_db.sqlite3
