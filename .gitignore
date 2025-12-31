@@ -5,3 +5,5 @@ __pycache__/
 app2.py
 .DS_Store
 rag_db.sqlite3
+#Chromadb files
+rag_db
