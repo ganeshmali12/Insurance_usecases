@@ -1,0 +1,37 @@
+{
+  "quotes": [
+    {
+      "quote_id": "Q1",
+      "provider_name": "ABC Insurance",
+      "premium": { "amount": 16000 },
+      "deductible": { "amount": 5000 },
+      "coverage": {
+        "child_coverage": true,
+        "maternity": false,
+        "room_rent_limit": "2% of sum insured"
+      }
+    },
+    {
+      "quote_id": "Q2",
+      "provider_name": "XYZ Health",
+      "premium": { "amount": 18500 },
+      "deductible": { "amount": 2000 },
+      "coverage": {
+        "child_coverage": true,
+        "maternity": true,
+        "room_rent_limit": "No limit"
+      }
+    },
+    {
+      "quote_id": "Q3",
+      "provider_name": "PQR Care",
+      "premium": { "amount": 14000 },
+      "deductible": { "amount": 7000 },
+      "coverage": {
+        "child_coverage": false,
+        "maternity": false,
+        "room_rent_limit": "1% of sum insured"
+      }
+    }
+  ]
+}

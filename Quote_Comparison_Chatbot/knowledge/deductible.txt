@@ -1,0 +1,15 @@
+Deductible means the amount of money you must pay yourself before the insurance company starts paying.
+
+Example:
+If your deductible is ₹2,000 and your hospital bill is ₹20,000,
+you pay ₹2,000 and the insurance company pays the rest.
+
+Lower deductible:
+- You pay less from your pocket during a claim
+- Premium is usually higher
+- Better if hospital visits are frequent
+
+Higher deductible:
+- Premium is cheaper
+- You pay more during claims
+- Risky for families or frequent treatment

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Insurance Quote Comparison Bot</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="container">
+    <h1>🛡️ Insurance Quote Comparison Bot</h1>
+    <p class="subtitle">
+        Compare multiple insurance quotes and get a simple, clear recommendation.
+    </p>
+
+    <form method="POST">
+        <label>📄 Paste Insurance Quotes (JSON)/text</label>
+        <textarea name="quotes" placeholder="Paste quotes JSON here..." required></textarea>
+
+        <label>❓ Ask Your Question</label>
+        <input type="text" name="question" placeholder="e.g. Which plan is best for a family of 4?" required>
+
+        <button type="submit">Compare Quotes</button>
+    </form>
+
+    {% if error %}
+        <div class="error">
+            ⚠️ {{ error }}
+        </div>
+    {% endif %}
+
+    {% if response %}
+        <div class="response">
+            <h2>🤖 Recommendation</h2>
+            <pre>{{ response }}</pre>
+        </div>
+    {% endif %}
+</div>
+
+</body>
+</html>

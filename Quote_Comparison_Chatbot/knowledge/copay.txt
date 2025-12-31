@@ -1,0 +1,15 @@
+Co-pay means a fixed percentage of the medical bill that you must pay yourself, even after insurance is applied.
+
+Example:
+If the co-pay is 10% and the hospital bill is ₹50,000,
+you must pay ₹5,000 and the insurance company pays the rest.
+
+Lower co-pay:
+- Better for frequent hospital visits
+- Lower out-of-pocket expense
+- Premium may be higher
+
+Higher co-pay:
+- Premium is cheaper
+- You pay more during claims
+- Not ideal for families or elderly members

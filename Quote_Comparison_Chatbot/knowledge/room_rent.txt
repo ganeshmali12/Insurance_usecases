@@ -1,0 +1,15 @@
+Room rent limit means the maximum cost per day for a hospital room that the insurance company will cover.
+
+Example:
+If a policy allows room rent up to ₹5,000 per day and you choose a room costing ₹7,000 per day,
+you must pay the extra ₹2,000 yourself.
+
+No room rent limit:
+- You can choose any room
+- Fewer surprise expenses
+- Usually comes with a higher premium
+
+Room rent limit:
+- Premium may be lower
+- You may have to pay extra during hospitalization
+- Important to check for families and emergencies
