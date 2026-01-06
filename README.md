@@ -3,10 +3,10 @@
 This repository contains multiple AI, LLM, and NLP-based projects built using modern technologies such as LangChain, Azure OpenAI, Flask, and Hugging Face models.
 Each project demonstrates a real-world use case with a focus on practical implementation, clean architecture, and explainability.
 
-📁 Repository Structure
+Repository Structure
 
 This repository contains the following projects:
-
+'''
 Insurance_usecases/
 │
 ├── Quote_Comparison_Chatbot/
@@ -32,7 +32,7 @@ Insurance_usecases/
 │   └── README.md
 │
 └── README.md   ← (You are here)
-
+'''
 
 Each project folder has its own README.md with detailed explanation, setup steps, and usage instructions.
 

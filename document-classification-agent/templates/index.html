@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document Classification Agent</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="container">
+    <h1>📄 Document Classification Agent</h1>
+    <p>Upload an insurance document to auto-classify it</p>
+
+    <div class="upload-box">
+        <input type="file" id="fileInput">
+        <button onclick="uploadFile()">Analyze Document</button>
+    </div>
+
+    <div id="loader" class="loader hidden"></div>
+
+    <div id="result" class="result hidden">
+        <h2>Result</h2>
+        <p><strong>Document Type:</strong> <span id="docType"></span></p>
+        <p><strong>Confidence:</strong> <span id="confidence"></span></p>
+        <div class="progress">
+            <div id="progressBar"></div>
+        </div>
+        <p class="reason" id="reason"></p>
+    </div>
+</div>
+
+<script>
+function uploadFile() {
+    const fileInput = document.getElementById("fileInput");
+    if (!fileInput.files.length) {
+        alert("Please select a file");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", fileInput.files[0]);
+
+    document.getElementById("loader").classList.remove("hidden");
+    document.getElementById("result").classList.add("hidden");
+
+    fetch("/classify", {
+        method: "POST",
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+    document.getElementById("loader").classList.add("hidden");
+    document.getElementById("result").classList.remove("hidden");
+
+    const docTypeEl = document.getElementById("docType");
+
+    // Set document type text
+    docTypeEl.innerText = data.document_type;
+
+    // 🔴🟢 Color logic (THIS IS WHAT YOU ASKED ABOUT)
+    if (data.document_type === "Unknown") {
+        docTypeEl.style.color = "red";
+    } else {
+        docTypeEl.style.color = "green";
+    }
+
+    // Confidence & reason
+    document.getElementById("confidence").innerText =
+        Math.round(data.confidence * 100) + "%";
+
+    document.getElementById("reason").innerText = data.reason;
+
+    document.getElementById("progressBar").style.width =
+        (data.confidence * 100) + "%";
+    });
+
+}
+</script>
+
+</body>
+</html>

@@ -5,3 +5,6 @@ python-dotenv
 pydantic
 chromadb
 sentence-transformers
+pytesseract
+pdf2image
+Pillow
