@@ -1,134 +1,190 @@
-## Insurance_Usecases
+# 🏦 Insurance Use Cases – AI & LLM Projects
 
-This repository contains multiple AI, LLM, and NLP-based projects built using modern technologies such as LangChain, Azure OpenAI, Flask, and Hugging Face models.
-Each project demonstrates a real-world use case with a focus on practical implementation, clean architecture, and explainability.
+This repository contains multiple **AI, LLM, and NLP-based projects** focused on **real-world insurance use cases**.  
+Each project demonstrates **practical implementation**, **clean architecture**, and **explainable AI workflows** using modern technologies such as **Azure OpenAI, LangChain, Flask, and OCR**.
 
-Repository Structure
+All projects are designed to be **interview-ready**, **educational**, and **industry-aligned**.
 
-This repository contains the following projects:
-'''
+---
+
+## 📂 Repository Structure (with File Descriptions)
+
+```text
 Insurance_usecases/
 │
-├── Quote_Comparison_Chatbot/
-│   ├── app.py
-│   ├── quote_comparison_agent.py
-│   ├── rag_store.py
-│   ├── knowledge/
-│   ├── data/
-│   ├── templates/
-│   ├── static/
-│   └── README.md
+├── Quote_Comparison_Chatbot/                # AI chatbot for comparing insurance quotes
+│   ├── app.py                               # Flask entry point for the chatbot UI
+│   ├── quote_comparison_agent.py            # Core LLM logic for comparing quotes
+│   ├── rag_store.py                         # RAG pipeline and vector store logic
+│   ├── knowledge/                           # Reference documents for RAG
+│   ├── data/                                # Sample insurance quote data
+│   ├── templates/                           # HTML templates for Flask UI
+│   ├── static/                              # CSS and frontend assets
+│   └── README.md                            # Project-specific documentation
 │
-├── Claims_Description_Normalizer/
-│   ├── app.py
-│   ├── normalizer.py
-│   ├── sample_data/
-│   └── README.md
+├── Claims_Description_Normalizer/           # Converts unstructured claims into structured JSON
+│   ├── app.py                               # Flask application entry point
+│   ├── normalizer.py                        # LLM-based claim normalization logic
+│   ├── sample_data/                         # Sample raw claim descriptions
+│   └── README.md                            # Project-specific documentation
 │
-├── Underwriting_Assistant/
-│   ├── app.py
-│   ├── underwriting_agent.py
-│   ├── rules/
-│   └── README.md
+├── Underwriting_Assistant/                  # AI assistant for underwriting decision support
+│   ├── app.py                               # Flask application entry point
+│   ├── underwriting_agent.py                # Core underwriting logic (rules + LLM)
+│   ├── rules/                               # Underwriting rulebooks and constraints
+│   └── README.md                            # Project-specific documentation
 │
-└── README.md   ← (You are here)
-'''
+├── Document_Classification_Agent/           # OCR + AI-based insurance document classifier
+│   ├── app.py                               # Flask UI for document upload and results
+│   ├── classifier.py                        # Core classification logic (OCR + rules + LLM)
+│   ├── utils/                               # Helper utilities
+│   │   └── ocr_utils.py                     # OCR logic using Tesseract and PDF handling
+│   ├── data/                                # Uploaded and sample documents
+│   ├── templates/                           # HTML templates for Flask UI
+│   ├── static/                              # CSS and frontend assets
+│   └── README.md                            # Project-specific documentation
+│
+└── README.md                                # Root repository documentation (this file)
+```
+Each project folder contains its own dedicated README.md explaining setup, architecture, and usage.
 
-Each project folder has its own README.md with detailed explanation, setup steps, and usage instructions.
+---
 
-## Projects Overview
-# 1.Insurance Quote Comparison Chatbot
+## 🧠 Projects Overview
+### 1️. Insurance Quote Comparison Chatbot
 
 An AI-powered chatbot that compares multiple insurance quotes and explains differences in premium, deductible, and coverage in simple language.
 
-# Key Highlights:
+Key Highlights:
 
-Supports JSON and plain-text insurance quotes
+- Supports JSON and plain-text insurance quotes
 
-Uses Retrieval-Augmented Generation (RAG)
+- Uses Retrieval-Augmented Generation (RAG)
 
-Scenario-based reasoning (e.g., family of 4)
+- Scenario-based reasoning (e.g., family size, coverage needs)
 
-Flask-based interactive UI
+- Flask-based interactive UI
 
-Hugging Face MiniLM embeddings (free & local)
+- Hugging Face MiniLM embeddings (free & local)
 
 Folder: Quote_Comparison_Chatbot/
 
-# 2️.Claims Description Normalizer
+---
+
+### 2️. Claims Description Normalizer
 
 An NLP-based system that converts unstructured insurance claim descriptions into clean, structured JSON data.
 
 Key Highlights:
 
-Converts messy claim text into structured format
+- Converts messy claim text into structured format
 
-Entity extraction using LLMs
+- Entity extraction using LLMs
 
-Prompt-based normalization
+- Prompt-based normalization
 
-Useful for downstream automation and analytics
+- Useful for automation and analytics
 
 Folder: Claims_Description_Normalizer/
 
-# 3️.Underwriting Assistant
+---
 
-An AI assistant designed to support insurance underwriting decisions by analyzing applicant details against predefined underwriting rules.
+### 3️. Underwriting Assistant
+
+An AI assistant designed to support insurance underwriting decisions by evaluating applicant details against predefined rules.
+
+Key Highlights:
+~~~
+- Rule-based + LLM reasoning
+
+- Transparent and explainable decisions
+
+- Uses structured underwriting rulebooks
+
+- Suitable for decision-support systems
+
+Folder: Underwriting_Assistant/
+~~~
+---
+
+### 4️. Document Classification Agent
+
+An AI-powered system that classifies insurance documents such as Claim Forms, Inspection Reports, and Invoices using OCR, rules, and Azure OpenAI.
+
+The system safely returns Unknown for irrelevant documents instead of forcing incorrect classifications.
 
 Key Highlights:
 
-Rule-based + LLM reasoning
+- Supports images and PDFs
 
-Explains underwriting decisions clearly
+- Free OCR using Tesseract
 
-Uses structured rulebooks
+- Insurance-domain validation and rejection logic
 
-Suitable for decision-support systems
+- Semantic document understanding using Azure OpenAI
 
-Folder: Underwriting_Assistant/
+- Confidence score with explanation
+
+- Clean Flask-based UI
+
+Folder: Document_Classification_Agent/
+
+---
 
 ## Common Tech Stack Used
 
-Python
+- Python
 
-LangChain
+- Flask
 
-Azure OpenAI
+- Azure OpenAI
 
-Hugging Face (MiniLM)
+- LangChain
 
-Flask
+- Hugging Face (MiniLM)
 
-Chroma Vector Database
+- Tesseract OCR
 
-Prompt Engineering
+- Chroma Vector Database
 
-Retrieval-Augmented Generation (RAG)
+- Prompt Engineering
 
+- Retrieval-Augmented Generation (RAG)
+
+---
 ## Purpose of This Repository
 
-Showcase real-world AI/LLM projects
+- Showcase real-world AI/LLM insurance applications
 
-Demonstrate end-to-end AI application development
+- Demonstrate end-to-end AI system development
 
-Serve as a learning and reference repository
+- Provide clean, explainable, and scalable designs
 
-Provide interview-ready projects with clean architecture
+- Serve as a learning and reference repository
+
+- Offer interview-ready projects with practical relevance
+
+---
 
 ## How to Use
 
-Clone the repository
+Step1. Clone the repository
 
-Navigate into any project folder
+Step2. Navigate into any project folder
 
-Follow the instructions in that project’s README.md
+Step3. Follow the instructions in that project’s README.md
 
-Run and explore the application
+Step4. Run and explore the application
 
-## Note
+Each project is self-contained and can be executed independently.
 
-Environment variables (.env) are required for Azure OpenAI–based projects
+---
 
-.env files are intentionally excluded from version control
+## Notes
 
-Each project is self-contained and can be run independently
+
+- Environment variables (.env) are required for Azure OpenAI–based projects
+
+- .env files are intentionally excluded from version control
+
+- No real or sensitive insurance data is used
