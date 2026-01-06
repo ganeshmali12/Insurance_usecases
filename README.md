@@ -1,4 +1,4 @@
-# 🏦 Insurance Use Cases – AI & LLM Projects
+#  Insurance Use Cases – AI & LLM Projects
 
 This repository contains multiple **AI, LLM, and NLP-based projects** focused on **real-world insurance use cases**.  
 Each project demonstrates **practical implementation**, **clean architecture**, and **explainable AI workflows** using modern technologies such as **Azure OpenAI, LangChain, Flask, and OCR**.
@@ -7,7 +7,7 @@ All projects are designed to be **interview-ready**, **educational**, and **indu
 
 ---
 
-## 📂 Repository Structure (with File Descriptions)
+##  Repository Structure (with File Descriptions)
 
 ```text
 Insurance_usecases/
@@ -50,7 +50,7 @@ Each project folder contains its own dedicated README.md explaining setup, archi
 
 ---
 
-## 🧠 Projects Overview
+##  Projects Overview
 ### 1️. Insurance Quote Comparison Chatbot
 
 An AI-powered chatbot that compares multiple insurance quotes and explains differences in premium, deductible, and coverage in simple language.
