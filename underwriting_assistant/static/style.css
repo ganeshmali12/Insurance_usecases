@@ -1,0 +1,219 @@
+/* Underwriting Assistant - Stylesheet */
+
+:root {
+    --primary: #667eea;
+    --secondary: #764ba2;
+    --success: #155724;
+    --warning: #856404;
+    --danger: #721c24;
+    --light: #f8f9fa;
+    --dark: #333;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px;
+}
+
+h1 {
+    color: var(--dark);
+    margin-bottom: 10px;
+    text-align: center;
+    font-size: 32px;
+}
+
+.subtitle {
+    text-align: center;
+    color: #666;
+    margin-bottom: 30px;
+    font-size: 14px;
+}
+
+.info-box {
+    background: #e7f3ff;
+    border-left: 4px solid #2196F3;
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    color: #055160;
+}
+
+.form-section {
+    background: var(--light);
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.form-section h3 {
+    color: var(--primary);
+    margin-bottom: 15px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--dark);
+    font-weight: 500;
+    font-size: 14px;
+}
+
+textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    resize: vertical;
+    min-height: 80px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+}
+
+.button-group {
+    text-align: center;
+    margin-top: 25px;
+}
+
+button {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    color: white;
+    padding: 12px 40px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+.result-section {
+    margin-top: 40px;
+    padding: 25px;
+    border-left: 5px solid var(--primary);
+    background: #f0f4ff;
+    border-radius: 8px;
+    display: none;
+}
+
+.result-section.show {
+    display: block;
+}
+
+.result-section h2 {
+    color: var(--primary);
+    margin-bottom: 20px;
+    font-size: 20px;
+}
+
+.risk-badge {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+
+.risk-low {
+    background: #d4edda;
+    color: var(--success);
+}
+
+.risk-medium {
+    background: #fff3cd;
+    color: var(--warning);
+}
+
+.risk-high {
+    background: #f8d7da;
+    color: var(--danger);
+}
+
+.result-content {
+    background: white;
+    padding: 15px;
+    border-radius: 6px;
+    margin-top: 15px;
+    line-height: 1.6;
+    color: var(--dark);
+}
+
+.result-content pre {
+    background: #f5f5f5;
+    padding: 15px;
+    border-radius: 4px;
+    overflow-x: auto;
+    margin-top: 10px;
+    font-size: 13px;
+    line-height: 1.5;
+    font-family: 'Courier New', monospace;
+}
+
+.result-content h4 {
+    color: var(--primary);
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.result-content ul {
+    margin-left: 20px;
+    margin-top: 10px;
+}
+
+.result-content li {
+    margin-bottom: 8px;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 20px;
+    }
+    
+    h1 {
+        font-size: 24px;
+    }
+    
+    button {
+        width: 100%;
+    }
+}

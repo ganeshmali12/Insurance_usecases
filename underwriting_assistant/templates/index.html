@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Underwriting Assistant</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            max-width: 900px;
+            width: 100%;
+            padding: 40px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .form-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .form-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+        }
+        
+        .button-group {
+            text-align: center;
+            margin-top: 25px;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 40px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .result-section {
+            margin-top: 40px;
+            padding: 25px;
+            border-left: 5px solid #667eea;
+            background: #f0f4ff;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .result-section.show {
+            display: block;
+        }
+        
+        .result-section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+        
+        .risk-badge {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        
+        .risk-low {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .risk-medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .risk-high {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .result-content {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+            line-height: 1.6;
+            color: #333;
+        }
+        
+        .result-content pre {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin-top: 10px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #055160;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏛️ Underwriting Assistant</h1>
+        <p class="subtitle">AI-Powered Insurance Risk Assessment</p>
+        
+        <div class="info-box">
+            ℹ️ Enter applicant details below. The system will evaluate against underwriting rules and provide a risk assessment with reasoning.
+        </div>
+        
+        <form method="POST">
+            <div class="form-section">
+                <h3>📋 Applicant Data</h3>
+                <div class="form-group">
+                    <label>Age, Health Status, Coverage Amount, etc.</label>
+                    <textarea name="applicant_data" placeholder="Example: Age 65, Pre-existing diabetes, Coverage ₹50 Lakhs, Non-smoker...">{{ request.form.get('applicant_data', '') }}</textarea>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h3>📊 Claims History</h3>
+                <div class="form-group">
+                    <label>Previous Claims (Date, Type, Amount)</label>
+                    <textarea name="claims_history" placeholder="Example: 2024-01 Hospitalization ₹2L, 2023-06 Minor claim ₹50K...">{{ request.form.get('claims_history', '') }}</textarea>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h3>📄 External Report</h3>
+                <div class="form-group">
+                    <label>Medical Report, Investigation Notes, etc.</label>
+                    <textarea name="external_report" placeholder="Example: Medical exam shows stable condition, No liver issues, BMI normal...">{{ request.form.get('external_report', '') }}</textarea>
+                </div>
+            </div>
+            
+            <div class="button-group">
+                <button type="submit">Assess Risk & Get Recommendation</button>
+            </div>
+        </form>
+        
+        {% if result %}
+        <div class="result-section show">
+            <h2>📌 Assessment Result</h2>
+            
+            {% if result.get('risk_level') %}
+                {% if result['risk_level']|lower == 'low' %}
+                    <span class="risk-badge risk-low">🟢 Risk Level: {{ result['risk_level'] }} &nbsp;|&nbsp; Score: {{ result.get('risk_score', 'N/A') }}</span>
+                {% elif result['risk_level']|lower == 'medium' %}
+                    <span class="risk-badge risk-medium">🟡 Risk Level: {{ result['risk_level'] }} &nbsp;|&nbsp; Score: {{ result.get('risk_score', 'N/A') }}</span>
+                {% else %}
+                    <span class="risk-badge risk-high">🔴 Risk Level: {{ result['risk_level'] }} &nbsp;|&nbsp; Score: {{ result.get('risk_score', 'N/A') }}</span>
+                {% endif %}
+            {% endif %}
+            
+            <div class="result-content">
+                {% if result.get('recommendation') %}
+                    <strong>Recommendation:</strong> {{ result['recommendation'] }}
+                {% endif %}
+                
+                {% if result.get('policy_compliance_status') %}
+                    <br/><strong>Compliance Status:</strong> {{ result['policy_compliance_status'] }}
+                {% endif %}
+
+                {% if result.get('risk_score') is not none %}
+                    <br/><strong>Risk Score:</strong> {{ result['risk_score'] }}
+                {% endif %}
+
+                {% if result.get('identified_risks') %}
+                    <h4 style="margin-top: 15px; color: #667eea;">Identified Risks:</h4>
+                    <ul style="margin-left: 20px;">
+                        {% for risk in result['identified_risks'] %}
+                            <li>{{ risk }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+                
+                {% if result.get('triggered_rules') %}
+                    <h4 style="margin-top: 15px; color: #667eea;">Triggered Rules:</h4>
+                    <ul style="margin-left: 20px;">
+                        {% for rule in result['triggered_rules'] %}
+                            <li>{{ rule }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
