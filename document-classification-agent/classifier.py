@@ -55,7 +55,14 @@ Instructions:
   * Claim Form → look for claimant/patient name, policy number, incident description
   * Inspection Report → look for inspection, surveyor, property condition, four-point
 - Only return Unknown if the readable text gives no clear signal at all.
-- Provide a real confidence score: 0.9+ if very clear, 0.6-0.8 if mostly clear, below 0.5 if uncertain.
+- Confidence score must reflect the STRENGTH OF EVIDENCE, not just whether you can classify it.
+  Use this scale strictly:
+  * 0.90–1.00: Multiple strong, specific markers all present (e.g. invoice number + itemised costs + total; or claim number + claimant + incident date + policy number). Very little garbled text.
+  * 0.75–0.89: The type is clear but 1–2 key markers are missing or some sections are garbled/blank.
+  * 0.55–0.74: Only partial evidence — e.g. a title matches but the body is a blank form, or only one identifier is present.
+  * 0.35–0.54: Weak signal — a single vague indicator; could plausibly be another type.
+  * 0.00–0.34: Barely readable or highly ambiguous; type is a best guess.
+- DO NOT default to 0.95. Most real-world scanned documents should score between 0.55 and 0.85.
 
 Return ONLY valid JSON in this exact format:
 {{

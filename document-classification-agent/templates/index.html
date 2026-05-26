@@ -2,34 +2,157 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document Classification Agent</title>
     <link rel="stylesheet" href="/static/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
 
-<div class="container">
-    <h1>📄 Document Classification Agent</h1>
-    <p>Upload an insurance document to auto-classify it</p>
+<header>
+    <h1><i class="fas fa-file-invoice"></i> Document Classification Agent</h1>
+    <p>Upload insurance documents (PNG, JPG, PDF) for instant AI-powered classification</p>
+</header>
 
-    <div class="upload-box">
-        <input type="file" id="fileInput">
-        <button onclick="uploadFile()">Analyze Document</button>
+<div class="container">
+    <!-- UPLOAD SECTION -->
+    <div class="upload-section">
+        <div class="upload-box">
+            <div id="uploadArea" class="upload-area">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p><strong>Click to upload or drag documents here</strong></p>
+                <small>Supported: PNG, JPG, PDF (Max 10MB)</small>
+                <input type="file" id="fileInput" accept="image/png,image/jpeg,application/pdf" style="display:none;">
+            </div>
+            <button id="analyzeBtn" onclick="uploadFile()" class="analyze-btn" disabled>
+                <i class="fas fa-magic"></i> Analyze Document
+            </button>
+        </div>
     </div>
 
-    <div id="loader" class="loader hidden"></div>
+    <!-- LOADING SPINNER -->
+    <div id="loader" class="loader hidden">
+        <div class="spinner"></div>
+        <p>Analyzing document...</p>
+    </div>
 
-    <div id="result" class="result hidden">
-        <h2>Result</h2>
-        <p><strong>Document Type:</strong> <span id="docType"></span></p>
-        <p><strong>Confidence:</strong> <span id="confidence"></span></p>
-        <div class="progress">
-            <div id="progressBar"></div>
+    <!-- DOCUMENT PREVIEW & INFO -->
+    <div id="uploadedInfo" class="uploaded-info hidden">
+        <h3><i class="fas fa-file"></i> Uploaded Document</h3>
+        <div class="file-details">
+            <p><strong>Filename:</strong> <span id="fileName"></span></p>
+            <p><strong>File Type:</strong> <span id="fileType"></span></p>
+            <p><strong>File Size:</strong> <span id="fileSize"></span></p>
         </div>
-        <p class="reason" id="reason"></p>
+        
+        <!-- Image Preview for PNG/JPG -->
+        <div id="imagePreview" class="image-preview hidden">
+            <h4>Document Preview</h4>
+            <img id="previewImg" src="" alt="Document preview">
+        </div>
+
+        <!-- Extracted Text Preview for PDF/Images -->
+        <div id="textPreview" class="text-preview hidden">
+            <h4><i class="fas fa-file-lines"></i> Extracted Text (Preview)</h4>
+            <div id="extractedText" class="extracted-text"></div>
+        </div>
+    </div>
+
+    <!-- CLASSIFICATION RESULT -->
+    <div id="result" class="result hidden">
+        <div class="result-header">
+            <h2><i class="fas fa-check-circle"></i> Classification Result</h2>
+        </div>
+
+        <!-- Document Type Badge -->
+        <div class="result-grid">
+            <div class="result-card">
+                <div class="result-label"><i class="fas fa-tag"></i> Document Type</div>
+                <div id="docTypeBadge" class="doc-type-badge"></div>
+            </div>
+
+            <!-- Confidence Score -->
+            <div class="result-card">
+                <div class="result-label"><i class="fas fa-chart-pie"></i> Confidence</div>
+                <div class="confidence-display">
+                    <div class="confidence-text" id="confidence"></div>
+                    <div class="progress-bar">
+                        <div id="progressBar" class="progress-fill"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reason -->
+        <div class="result-card full-width">
+            <div class="result-label"><i class="fas fa-lightbulb"></i> Classification Reason</div>
+            <p class="reason" id="reason"></p>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button onclick="location.reload()" class="btn-secondary">
+                <i class="fas fa-plus"></i> Classify Another
+            </button>
+        </div>
     </div>
 </div>
 
 <script>
+// Drag & drop functionality
+const uploadArea = document.getElementById("uploadArea");
+const fileInput = document.getElementById("fileInput");
+const analyzeBtn = document.getElementById("analyzeBtn");
+
+uploadArea.addEventListener("click", () => fileInput.click());
+
+uploadArea.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    uploadArea.style.borderColor = "#3b82f6";
+    uploadArea.style.backgroundColor = "rgba(59, 130, 246, 0.1)";
+});
+
+uploadArea.addEventListener("dragleave", () => {
+    uploadArea.style.borderColor = "#ddd";
+    uploadArea.style.backgroundColor = "#fff";
+});
+
+uploadArea.addEventListener("drop", (e) => {
+    e.preventDefault();
+    uploadArea.style.borderColor = "#ddd";
+    uploadArea.style.backgroundColor = "#fff";
+    fileInput.files = e.dataTransfer.files;
+    handleFileSelect();
+});
+
+fileInput.addEventListener("change", handleFileSelect);
+
+function handleFileSelect() {
+    const file = fileInput.files[0];
+    if (!file) return;
+
+    // Enable analyze button
+    analyzeBtn.disabled = false;
+
+    // Show file info
+    document.getElementById("uploadedInfo").classList.remove("hidden");
+    document.getElementById("fileName").innerText = file.name;
+    document.getElementById("fileType").innerText = file.type || "Unknown";
+    document.getElementById("fileSize").innerText = (file.size / 1024).toFixed(2) + " KB";
+
+    // Show image preview for image files
+    if (file.type.startsWith("image/")) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            document.getElementById("previewImg").src = e.target.result;
+            document.getElementById("imagePreview").classList.remove("hidden");
+        };
+        reader.readAsDataURL(file);
+    } else {
+        document.getElementById("imagePreview").classList.add("hidden");
+    }
+}
+
 function uploadFile() {
     const fileInput = document.getElementById("fileInput");
     if (!fileInput.files.length) {
@@ -49,31 +172,84 @@ function uploadFile() {
     })
     .then(res => res.json())
     .then(data => {
-    document.getElementById("loader").classList.add("hidden");
-    document.getElementById("result").classList.remove("hidden");
+        document.getElementById("loader").classList.add("hidden");
+        document.getElementById("result").classList.remove("hidden");
 
-    const docTypeEl = document.getElementById("docType");
+        // Document type badge with icon
+        const docTypeEl = document.getElementById("docTypeBadge");
+        const docType = data.document_type;
+        
+        let icon = "";
+        let color = "";
+        
+        if (docType === "Claim Form") {
+            icon = "fa-file-alt";
+            color = "badge-claim";
+        } else if (docType === "Inspection Report") {
+            icon = "fa-file-contract";
+            color = "badge-inspection";
+        } else if (docType === "Invoice") {
+            icon = "fa-receipt";
+            color = "badge-invoice";
+        } else if (docType === "Policy Document") {
+            icon = "fa-shield-alt";
+            color = "badge-policy";
+        } else if (docType === "Medical Bill") {
+            icon = "fa-file-medical-alt";
+            color = "badge-medical";
+        } else {
+            icon = "fa-question-circle";
+            color = "badge-unknown";
+        }
+        
+        docTypeEl.className = `badge ${color}`;
+        docTypeEl.innerHTML = `<i class="fas ${icon}"></i> ${docType}`;
 
-    // Set document type text
-    docTypeEl.innerText = data.document_type;
+        // Confidence score
+        const confidencePercentage = Math.round(data.confidence * 100);
+        document.getElementById("confidence").innerText = confidencePercentage + "%";
+        
+        // Color confidence bar based on score
+        const progressBar = document.getElementById("progressBar");
+        progressBar.style.width = confidencePercentage + "%";
+        
+        if (confidencePercentage >= 80) {
+            progressBar.style.backgroundColor = "#10b981";
+        } else if (confidencePercentage >= 60) {
+            progressBar.style.backgroundColor = "#f59e0b";
+        } else {
+            progressBar.style.backgroundColor = "#ef4444";
+        }
 
-    // 🔴🟢 Color logic (THIS IS WHAT YOU ASKED ABOUT)
-    if (data.document_type === "Unknown") {
-        docTypeEl.style.color = "red";
-    } else {
-        docTypeEl.style.color = "green";
-    }
+        // Reason
+        document.getElementById("reason").innerText = data.reason;
 
-    // Confidence & reason
-    document.getElementById("confidence").innerText =
-        Math.round(data.confidence * 100) + "%";
-
-    document.getElementById("reason").innerText = data.reason;
-
-    document.getElementById("progressBar").style.width =
-        (data.confidence * 100) + "%";
+        // Try to show extracted text
+        showExtractedText(fileInput.files[0]);
+    })
+    .catch(err => {
+        document.getElementById("loader").classList.add("hidden");
+        alert("Error: " + err);
     });
+}
 
+function showExtractedText(file) {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    fetch("/debug-ocr", {
+        method: "POST",
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.extracted_text) {
+            const textPreview = data.extracted_text.substring(0, 300) + (data.extracted_text.length > 300 ? "..." : "");
+            document.getElementById("extractedText").innerText = textPreview;
+            document.getElementById("textPreview").classList.remove("hidden");
+        }
+    })
+    .catch(err => console.log("Could not fetch OCR text"));
 }
 </script>
 

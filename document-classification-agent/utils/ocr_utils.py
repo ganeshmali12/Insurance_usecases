@@ -1,6 +1,6 @@
 import pytesseract
 from pdf2image import convert_from_path
-from PIL import Image, ImageEnhance, ImageFilter
+from PIL import Image, ImageOps
 import os
 
 # Set tesseract path (Windows users only)
@@ -9,25 +9,49 @@ pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tessera
 
 def preprocess_image(image: Image.Image) -> Image.Image:
     """
-    Preprocess image to improve OCR accuracy on colored/stylized documents.
-    Steps: convert to grayscale, enhance contrast, sharpen.
+    Preprocess image for OCR.
+    - 2x upscale gives Tesseract more pixels to work with
+    - Grayscale removes color confusion without destroying character detail
+    - autocontrast normalises brightness across different scan/print qualities
+    No binary threshold — that destroys small colored text (e.g. teal invoices).
+    The confidence filter in _ocr_image handles noise separately.
     """
-    # Convert to grayscale (removes color confusion from teal/blue text)
-    image = image.convert("L")
-
-    # Enhance contrast so light-colored text becomes darker
-    image = ImageEnhance.Contrast(image).enhance(2.5)
-
-    # Sharpen edges so characters are crisper
-    image = image.filter(ImageFilter.SHARPEN)
-
-    # Scale up small images — Tesseract works best at 300 DPI equivalent
     w, h = image.size
-    if w < 1500:
-        scale = 2
-        image = image.resize((w * scale, h * scale), Image.LANCZOS)
+    if w < 2000:
+        image = image.resize((w * 2, h * 2), Image.LANCZOS)
+
+    image = image.convert("L")
+    image = ImageOps.autocontrast(image, cutoff=1)
 
     return image
+
+
+def _ocr_image(image: Image.Image) -> str:
+    """
+    Run Tesseract on a preprocessed image.
+    Uses word-level confidence filtering to discard OCR noise caused by
+    table borders and form cell lines, keeping only reliably recognised text.
+    """
+    processed = preprocess_image(image)
+    config = "--oem 3 --psm 6"
+
+    data = pytesseract.image_to_data(
+        processed,
+        config=config,
+        output_type=pytesseract.Output.DICT
+    )
+
+    lines = {}
+    for i, word in enumerate(data["text"]):
+        word = word.strip()
+        conf = int(data["conf"][i])
+        line_key = (data["block_num"][i], data["par_num"][i], data["line_num"][i])
+
+        # Keep words with confidence >= 40; skip empty strings and noise
+        if conf >= 40 and word:
+            lines.setdefault(line_key, []).append(word)
+
+    return "\n".join(" ".join(words) for words in lines.values()).strip()
 
 
 def extract_text(file_path: str) -> str:
@@ -37,14 +61,12 @@ def extract_text(file_path: str) -> str:
     text = ""
 
     if file_path.lower().endswith(".pdf"):
-        pages = convert_from_path(file_path)
+        pages = convert_from_path(file_path, dpi=300)
         for page in pages:
-            processed = preprocess_image(page)
-            text += pytesseract.image_to_string(processed)
+            text += _ocr_image(page) + "\n"
 
     else:
         image = Image.open(file_path)
-        processed = preprocess_image(image)
-        text = pytesseract.image_to_string(processed)
+        text = _ocr_image(image)
 
     return text.strip()
