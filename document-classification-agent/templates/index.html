@@ -10,8 +10,12 @@
 <body>
 
 <header>
+    <div class="header-top">
+        <span class="header-user"><i class="fas fa-user-circle"></i> {{ username }}</span>
+        <a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
     <h1><i class="fas fa-file-invoice"></i> Document Classification Agent</h1>
-    <p>Upload insurance documents (PNG, JPG, PDF) for instant AI-powered classification</p>
+    <p>Upload multiple insurance documents for instant AI-powered batch classification</p>
 </header>
 
 <div class="container">
@@ -21,235 +25,317 @@
             <div id="uploadArea" class="upload-area">
                 <i class="fas fa-cloud-upload-alt"></i>
                 <p><strong>Click to upload or drag documents here</strong></p>
-                <small>Supported: PNG, JPG, PDF (Max 10MB)</small>
-                <input type="file" id="fileInput" accept="image/png,image/jpeg,application/pdf" style="display:none;">
+                <small>Supported: PNG, JPG, PDF &nbsp;|&nbsp; Multiple files allowed &nbsp;|&nbsp; Max 10MB each</small>
+                <input type="file" id="fileInput" accept="image/png,image/jpeg,application/pdf" multiple style="display:none;">
             </div>
-            <button id="analyzeBtn" onclick="uploadFile()" class="analyze-btn" disabled>
-                <i class="fas fa-magic"></i> Analyze Document
+
+            <!-- Selected files list -->
+            <div id="fileList" class="file-list hidden"></div>
+
+            <button id="analyzeBtn" onclick="startBatch()" class="analyze-btn" disabled>
+                <i class="fas fa-magic"></i> Analyze All Documents
             </button>
         </div>
     </div>
 
-    <!-- LOADING SPINNER -->
-    <div id="loader" class="loader hidden">
-        <div class="spinner"></div>
-        <p>Analyzing document...</p>
-    </div>
-
-    <!-- DOCUMENT PREVIEW & INFO -->
-    <div id="uploadedInfo" class="uploaded-info hidden">
-        <h3><i class="fas fa-file"></i> Uploaded Document</h3>
-        <div class="file-details">
-            <p><strong>Filename:</strong> <span id="fileName"></span></p>
-            <p><strong>File Type:</strong> <span id="fileType"></span></p>
-            <p><strong>File Size:</strong> <span id="fileSize"></span></p>
+    <!-- PROGRESS BAR -->
+    <div id="batchProgress" class="batch-progress hidden">
+        <div class="batch-progress-header">
+            <span id="progressLabel">Processing...</span>
+            <span id="progressCount">0 / 0</span>
         </div>
-        
-        <!-- Image Preview for PNG/JPG -->
-        <div id="imagePreview" class="image-preview hidden">
-            <h4>Document Preview</h4>
-            <img id="previewImg" src="" alt="Document preview">
-        </div>
-
-        <!-- Extracted Text Preview for PDF/Images -->
-        <div id="textPreview" class="text-preview hidden">
-            <h4><i class="fas fa-file-lines"></i> Extracted Text (Preview)</h4>
-            <div id="extractedText" class="extracted-text"></div>
+        <div class="batch-progress-bar">
+            <div id="batchProgressFill" class="batch-progress-fill" style="width:0%"></div>
         </div>
     </div>
 
-    <!-- CLASSIFICATION RESULT -->
-    <div id="result" class="result hidden">
-        <div class="result-header">
-            <h2><i class="fas fa-check-circle"></i> Classification Result</h2>
+    <!-- RESULTS TABLE -->
+    <div id="resultsSection" class="results-section hidden">
+        <div class="results-header">
+            <h2><i class="fas fa-table"></i> Classification Results</h2>
+            <button onclick="exportCSV()" class="export-btn">
+                <i class="fas fa-download"></i> Export CSV
+            </button>
         </div>
 
-        <!-- Document Type Badge -->
-        <div class="result-grid">
-            <div class="result-card">
-                <div class="result-label"><i class="fas fa-tag"></i> Document Type</div>
-                <div id="docTypeBadge" class="doc-type-badge"></div>
-            </div>
-
-            <!-- Confidence Score -->
-            <div class="result-card">
-                <div class="result-label"><i class="fas fa-chart-pie"></i> Confidence</div>
-                <div class="confidence-display">
-                    <div class="confidence-text" id="confidence"></div>
-                    <div class="progress-bar">
-                        <div id="progressBar" class="progress-fill"></div>
-                    </div>
-                </div>
-            </div>
+        <div class="table-wrapper">
+            <table class="results-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Filename</th>
+                        <th>Document Type</th>
+                        <th>Confidence</th>
+                        <th>Reason</th>
+                    </tr>
+                </thead>
+                <tbody id="resultsBody"></tbody>
+            </table>
         </div>
 
-        <!-- Reason -->
-        <div class="result-card full-width">
-            <div class="result-label"><i class="fas fa-lightbulb"></i> Classification Reason</div>
-            <p class="reason" id="reason"></p>
-        </div>
-
-        <!-- Action Buttons -->
-        <div class="action-buttons">
+        <div class="action-buttons" style="margin-top:20px;">
             <button onclick="location.reload()" class="btn-secondary">
-                <i class="fas fa-plus"></i> Classify Another
+                <i class="fas fa-plus"></i> New Batch
             </button>
         </div>
     </div>
 </div>
 
+<!-- PREVIEW MODAL -->
+<div id="previewModal" class="modal-overlay hidden" onclick="closeModal(event)">
+    <div class="modal-box">
+        <div class="modal-header">
+            <span id="modalFilename" class="modal-title"></span>
+            <button class="modal-close" onclick="document.getElementById('previewModal').classList.add('hidden')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div id="modalPreview" class="modal-preview"></div>
+            <div class="modal-text-section">
+                <h4><i class="fas fa-align-left"></i> Extracted Text</h4>
+                <div id="modalTextContent" class="modal-text-content"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
-// Drag & drop functionality
-const uploadArea = document.getElementById("uploadArea");
-const fileInput = document.getElementById("fileInput");
-const analyzeBtn = document.getElementById("analyzeBtn");
+const CHUNK_SIZE = 5;
+const uploadArea  = document.getElementById("uploadArea");
+const fileInput   = document.getElementById("fileInput");
+const analyzeBtn  = document.getElementById("analyzeBtn");
 
+let allResults = [];
+const rowDataMap = {};  // rowNum → { file, extracted_text }
+let fileDataUrls  = [];  // index matches original file list order
+
+// ── Drag & drop ──────────────────────────────────────────
 uploadArea.addEventListener("click", () => fileInput.click());
-
 uploadArea.addEventListener("dragover", (e) => {
     e.preventDefault();
     uploadArea.style.borderColor = "#3b82f6";
-    uploadArea.style.backgroundColor = "rgba(59, 130, 246, 0.1)";
+    uploadArea.style.backgroundColor = "rgba(59,130,246,0.1)";
 });
-
 uploadArea.addEventListener("dragleave", () => {
     uploadArea.style.borderColor = "#ddd";
-    uploadArea.style.backgroundColor = "#fff";
+    uploadArea.style.backgroundColor = "#f9fafb";
 });
-
 uploadArea.addEventListener("drop", (e) => {
     e.preventDefault();
     uploadArea.style.borderColor = "#ddd";
-    uploadArea.style.backgroundColor = "#fff";
+    uploadArea.style.backgroundColor = "#f9fafb";
     fileInput.files = e.dataTransfer.files;
     handleFileSelect();
 });
-
 fileInput.addEventListener("change", handleFileSelect);
 
+// ── File selection ────────────────────────────────────────
 function handleFileSelect() {
-    const file = fileInput.files[0];
-    if (!file) return;
+    const files = Array.from(fileInput.files);
+    if (!files.length) return;
 
-    // Enable analyze button
     analyzeBtn.disabled = false;
+    allResults  = [];
+    fileDataUrls = [];
 
-    // Show file info
-    document.getElementById("uploadedInfo").classList.remove("hidden");
-    document.getElementById("fileName").innerText = file.name;
-    document.getElementById("fileType").innerText = file.type || "Unknown";
-    document.getElementById("fileSize").innerText = (file.size / 1024).toFixed(2) + " KB";
-
-    // Show image preview for image files
-    if (file.type.startsWith("image/")) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            document.getElementById("previewImg").src = e.target.result;
-            document.getElementById("imagePreview").classList.remove("hidden");
-        };
-        reader.readAsDataURL(file);
-    } else {
-        document.getElementById("imagePreview").classList.add("hidden");
-    }
-}
-
-function uploadFile() {
-    const fileInput = document.getElementById("fileInput");
-    if (!fileInput.files.length) {
-        alert("Please select a file");
-        return;
-    }
-
-    const formData = new FormData();
-    formData.append("file", fileInput.files[0]);
-
-    document.getElementById("loader").classList.remove("hidden");
-    document.getElementById("result").classList.add("hidden");
-
-    fetch("/classify", {
-        method: "POST",
-        body: formData
-    })
-    .then(res => res.json())
-    .then(data => {
-        document.getElementById("loader").classList.add("hidden");
-        document.getElementById("result").classList.remove("hidden");
-
-        // Document type badge with icon
-        const docTypeEl = document.getElementById("docTypeBadge");
-        const docType = data.document_type;
-        
-        let icon = "";
-        let color = "";
-        
-        if (docType === "Claim Form") {
-            icon = "fa-file-alt";
-            color = "badge-claim";
-        } else if (docType === "Inspection Report") {
-            icon = "fa-file-contract";
-            color = "badge-inspection";
-        } else if (docType === "Invoice") {
-            icon = "fa-receipt";
-            color = "badge-invoice";
-        } else if (docType === "Policy Document") {
-            icon = "fa-shield-alt";
-            color = "badge-policy";
-        } else if (docType === "Medical Bill") {
-            icon = "fa-file-medical-alt";
-            color = "badge-medical";
+    // Pre-read every file as a data URL right now while File objects are fresh
+    files.forEach((f, i) => {
+        if (f.type === "application/pdf") {
+            fileDataUrls[i] = { dataUrlPromise: Promise.resolve(URL.createObjectURL(f)), isPdf: true };
         } else {
-            icon = "fa-question-circle";
-            color = "badge-unknown";
+            fileDataUrls[i] = {
+                isPdf: false,
+                dataUrlPromise: new Promise((resolve) => {
+                    const r = new FileReader();
+                    r.onload  = (e) => resolve(e.target.result);
+                    r.onerror = ()  => resolve(null);
+                    r.readAsDataURL(f);
+                })
+            };
         }
-        
-        docTypeEl.className = `badge ${color}`;
-        docTypeEl.innerHTML = `<i class="fas ${icon}"></i> ${docType}`;
-
-        // Confidence score
-        const confidencePercentage = Math.round(data.confidence * 100);
-        document.getElementById("confidence").innerText = confidencePercentage + "%";
-        
-        // Color confidence bar based on score
-        const progressBar = document.getElementById("progressBar");
-        progressBar.style.width = confidencePercentage + "%";
-        
-        if (confidencePercentage >= 80) {
-            progressBar.style.backgroundColor = "#10b981";
-        } else if (confidencePercentage >= 60) {
-            progressBar.style.backgroundColor = "#f59e0b";
-        } else {
-            progressBar.style.backgroundColor = "#ef4444";
-        }
-
-        // Reason
-        document.getElementById("reason").innerText = data.reason;
-
-        // Try to show extracted text
-        showExtractedText(fileInput.files[0]);
-    })
-    .catch(err => {
-        document.getElementById("loader").classList.add("hidden");
-        alert("Error: " + err);
     });
+
+    const fileList = document.getElementById("fileList");
+    fileList.innerHTML = "";
+    files.forEach((f, i) => {
+        const row = document.createElement("div");
+        row.className = "file-list-item";
+        row.id = `file-item-${i}`;
+        row.innerHTML = `
+            <span class="file-list-icon"><i class="fas ${f.type === 'application/pdf' ? 'fa-file-pdf' : 'fa-file-image'}"></i></span>
+            <span class="file-list-name">${f.name}</span>
+            <span class="file-list-size">${(f.size/1024).toFixed(1)} KB</span>
+            <span class="file-list-status" id="status-${i}"><i class="fas fa-clock"></i> Waiting</span>`;
+        fileList.appendChild(row);
+    });
+    fileList.classList.remove("hidden");
+
+    document.getElementById("resultsSection").classList.add("hidden");
+    document.getElementById("batchProgress").classList.add("hidden");
 }
 
-function showExtractedText(file) {
+// ── Batch processing ──────────────────────────────────────
+async function startBatch() {
+    const files = Array.from(fileInput.files);
+    if (!files.length) return;
+
+    analyzeBtn.disabled = true;
+    allResults = [];
+
+    // Show progress
+    const progressSection = document.getElementById("batchProgress");
+    const progressFill    = document.getElementById("batchProgressFill");
+    const progressCount   = document.getElementById("progressCount");
+    const progressLabel   = document.getElementById("progressLabel");
+    progressSection.classList.remove("hidden");
+    document.getElementById("resultsSection").classList.add("hidden");
+    document.getElementById("resultsBody").innerHTML = "";
+
+    let completed = 0;
+    progressCount.innerText = `0 / ${files.length}`;
+    progressLabel.innerText = "Processing...";
+
+    // Process in chunks of CHUNK_SIZE
+    for (let i = 0; i < files.length; i += CHUNK_SIZE) {
+        const chunk = files.slice(i, i + CHUNK_SIZE);
+        const chunkIndices = chunk.map((_, j) => i + j);
+
+        // Mark chunk as processing
+        chunkIndices.forEach(idx => {
+            document.getElementById(`status-${idx}`).innerHTML =
+                `<i class="fas fa-spinner fa-spin"></i> Processing`;
+        });
+
+        // Fire all in chunk simultaneously
+        const promises = chunk.map((file, j) => classifyFile(file, i + j));
+        const results  = await Promise.all(promises);
+
+        // Update UI for completed chunk
+        results.forEach((result, j) => {
+            completed++;
+            const idx = i + j;
+            const pct = Math.round(result.data.confidence * 100);
+            document.getElementById(`status-${idx}`).innerHTML =
+                `<i class="fas fa-check-circle" style="color:#10b981"></i> Done`;
+            progressCount.innerText = `${completed} / ${files.length}`;
+            progressFill.style.width = `${Math.round((completed / files.length) * 100)}%`;
+            addResultRow(completed, result.filename, result.data, i + j);
+            allResults.push({ filename: result.filename, ...result.data });
+        });
+    }
+
+    progressLabel.innerText = "Complete!";
+    document.getElementById("resultsSection").classList.remove("hidden");
+    analyzeBtn.disabled = false;
+}
+
+async function classifyFile(file, index) {
     const formData = new FormData();
     formData.append("file", file);
+    try {
+        const res  = await fetch("/classify", { method: "POST", body: formData });
+        const data = await res.json();
+        return { filename: file.name, data };
+    } catch (err) {
+        return { filename: file.name, data: { document_type: "Error", confidence: 0, reason: err.toString(), extracted_text: "" }};
+    }
+}
 
-    fetch("/debug-ocr", {
-        method: "POST",
-        body: formData
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.extracted_text) {
-            const textPreview = data.extracted_text.substring(0, 300) + (data.extracted_text.length > 300 ? "..." : "");
-            document.getElementById("extractedText").innerText = textPreview;
-            document.getElementById("textPreview").classList.remove("hidden");
+// ── Results table ─────────────────────────────────────────
+const BADGE_MAP = {
+    "Claim Form":        { icon: "fa-file-alt",         color: "badge-claim" },
+    "Inspection Report": { icon: "fa-file-contract",    color: "badge-inspection" },
+    "Invoice":           { icon: "fa-receipt",          color: "badge-invoice" },
+    "Policy Document":   { icon: "fa-shield-alt",       color: "badge-policy" },
+    "Medical Bill":      { icon: "fa-file-medical-alt", color: "badge-medical" },
+};
+
+function addResultRow(rowNum, filename, data, fileIndex) {
+    const fd = fileDataUrls[fileIndex] || { dataUrlPromise: Promise.resolve(null), isPdf: false };
+    rowDataMap[rowNum] = { dataUrlPromise: fd.dataUrlPromise, isPdf: fd.isPdf, extracted_text: data.extracted_text || "" };
+
+    const tbody  = document.getElementById("resultsBody");
+    const pct    = Math.round((data.confidence || 0) * 100);
+    const badge  = BADGE_MAP[data.document_type] || { icon: "fa-question-circle", color: "badge-unknown" };
+    const barClr = pct >= 80 ? "#10b981" : pct >= 60 ? "#f59e0b" : "#ef4444";
+
+    const tr = document.createElement("tr");
+    tr.classList.add("clickable-row");
+    tr.title = "Click to preview";
+    tr.onclick = () => openPreviewModal(rowNum, filename);
+    tr.innerHTML = `
+        <td class="col-num">${rowNum}</td>
+        <td class="col-file"><i class="fas fa-file" style="color:#667eea;margin-right:6px;"></i>${filename}</td>
+        <td class="col-type"><span class="badge ${badge.color}"><i class="fas ${badge.icon}"></i> ${data.document_type}</span></td>
+        <td class="col-conf">
+            <div class="mini-conf">${pct}%</div>
+            <div class="mini-bar"><div style="width:${pct}%;background:${barClr};height:6px;border-radius:3px;"></div></div>
+        </td>
+        <td class="col-reason">${data.reason || "—"} <span class="preview-hint"><i class="fas fa-eye"></i></span></td>`;
+    tbody.appendChild(tr);
+}
+
+// ── Preview modal ─────────────────────────────────────────
+async function openPreviewModal(rowNum, filename) {
+    const entry = rowDataMap[rowNum];
+    document.getElementById("modalFilename").textContent = filename;
+
+    const previewEl = document.getElementById("modalPreview");
+    previewEl.innerHTML = "<p style='text-align:center;color:#aaa;padding:30px;'><i class='fas fa-spinner fa-spin'></i> Loading preview...</p>";
+    document.getElementById("previewModal").classList.remove("hidden");
+
+    const dataUrl = await entry.dataUrlPromise;
+    previewEl.innerHTML = "";
+
+    if (dataUrl) {
+        if (entry.isPdf) {
+            const iframe = document.createElement("iframe");
+            iframe.src = dataUrl;
+            iframe.style.cssText = "width:100%;height:360px;border:1px solid #e5e7eb;border-radius:8px;";
+            previewEl.appendChild(iframe);
+        } else {
+            const img = document.createElement("img");
+            img.style.cssText = "max-width:100%;max-height:360px;border-radius:8px;display:block;margin:0 auto;object-fit:contain;";
+            img.src = dataUrl;
+            previewEl.appendChild(img);
         }
-    })
-    .catch(err => console.log("Could not fetch OCR text"));
+    } else {
+        previewEl.innerHTML = "<p style='text-align:center;color:#999;padding:20px;'>Preview not available</p>";
+    }
+
+    // Extracted text
+    const text = entry.extracted_text ? entry.extracted_text.trim() : "";
+    document.getElementById("modalTextContent").textContent =
+        text.length > 0
+            ? text.substring(0, 600) + (text.length > 600 ? "..." : "")
+            : "No readable text could be extracted from this document.";
+}
+
+function closeModal(e) {
+    if (e.target === document.getElementById("previewModal")) {
+        document.getElementById("previewModal").classList.add("hidden");
+    }
+}
+
+// ── CSV export ────────────────────────────────────────────
+function exportCSV() {
+    const headers = ["#", "Filename", "Document Type", "Confidence (%)", "Reason"];
+    const rows = allResults.map((r, i) => [
+        i + 1,
+        `"${r.filename}"`,
+        `"${r.document_type}"`,
+        Math.round((r.confidence || 0) * 100),
+        `"${(r.reason || "").replace(/"/g, "'")}"`
+    ]);
+    const csv = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement("a");
+    a.href     = url;
+    a.download = `classification_results_${new Date().toISOString().slice(0,10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
 }
 </script>
 

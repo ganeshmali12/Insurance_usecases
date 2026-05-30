@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login — Document Classification Agent</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+
+<header>
+    <h1><i class="fas fa-file-invoice"></i> Document Classification Agent</h1>
+    <p>Insurance AI — Secure Access</p>
+</header>
+
+<div class="login-wrapper">
+    <div class="login-card">
+        <div class="login-icon">
+            <i class="fas fa-lock"></i>
+        </div>
+        <h2>Sign In</h2>
+        <p class="login-subtitle">Enter your credentials to continue</p>
+
+        {% if error %}
+        <div class="login-error">
+            <i class="fas fa-exclamation-circle"></i> {{ error }}
+        </div>
+        {% endif %}
+
+        <form method="POST" action="/login" autocomplete="off">
+            <div class="login-field">
+                <label for="username"><i class="fas fa-user"></i> Username</label>
+                <input type="text" id="username" name="username" placeholder="Enter username" required autofocus>
+            </div>
+            <div class="login-field">
+                <label for="password"><i class="fas fa-key"></i> Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter password" required>
+            </div>
+            <button type="submit" class="login-btn">
+                <i class="fas fa-sign-in-alt"></i> Sign In
+            </button>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

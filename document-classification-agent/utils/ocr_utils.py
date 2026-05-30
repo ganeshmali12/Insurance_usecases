@@ -1,6 +1,8 @@
 import pytesseract
-from pdf2image import convert_from_path
+import pdfplumber
+import fitz  # PyMuPDF — self-contained PDF renderer, no Poppler needed
 from PIL import Image, ImageOps
+import io
 import os
 
 # Set tesseract path (Windows users only)
@@ -54,19 +56,46 @@ def _ocr_image(image: Image.Image) -> str:
     return "\n".join(" ".join(words) for words in lines.values()).strip()
 
 
-def extract_text(file_path: str) -> str:
+def _extract_native_pdf(file_path: str) -> str:
     """
-    Extract text from PDF or Image using Tesseract OCR
+    Extract embedded text directly from a native/digital PDF using pdfplumber.
+    Returns empty string if the PDF has no embedded text (i.e. it is scanned).
     """
     text = ""
+    with pdfplumber.open(file_path) as pdf:
+        for page in pdf.pages:
+            page_text = page.extract_text()
+            if page_text:
+                text += page_text + "\n"
+    return text.strip()
 
+
+def extract_text(file_path: str) -> str:
+    """
+    Extract text from a PDF or image file.
+
+    For PDFs:
+      1. Try native text extraction with pdfplumber (fast, perfect for
+         digital PDFs like resumes, invoices created in Word/Docs etc.)
+      2. If result is too short (<50 chars), the PDF is scanned —
+         fall back to Tesseract OCR on rendered page images.
+
+    Images are always processed with Tesseract OCR.
+    """
     if file_path.lower().endswith(".pdf"):
-        pages = convert_from_path(file_path, dpi=300)
-        for page in pages:
-            text += _ocr_image(page) + "\n"
+        native_text = _extract_native_pdf(file_path)
+        if len(native_text) >= 50:
+            return native_text
+        # Scanned PDF — fall back to OCR using PyMuPDF (no Poppler needed)
+        text = ""
+        doc = fitz.open(file_path)
+        for page in doc:
+            pix = page.get_pixmap(dpi=450)
+            img = Image.open(io.BytesIO(pix.tobytes("png")))
+            text += _ocr_image(img) + "\n"
+        doc.close()
+        return text.strip()
 
     else:
         image = Image.open(file_path)
-        text = _ocr_image(image)
-
-    return text.strip()
+        return _ocr_image(image)

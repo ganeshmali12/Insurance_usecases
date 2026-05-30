@@ -1,6 +1,7 @@
 flask
 pytesseract
-pdf2image
+pymupdf
 Pillow
+pdfplumber
 python-dotenv
 openai

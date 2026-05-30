@@ -110,7 +110,8 @@ def classify_document(file_path: str) -> dict:
         return {
             "document_type": "Unknown",
             "confidence": 0.0,
-            "reason": f"Could not read file: {str(e)}"
+            "reason": f"Could not read file: {str(e)}",
+            "extracted_text": ""
         }
 
     print(f"[DEBUG] Extracted text length: {len(text.strip())} chars")
@@ -121,23 +122,28 @@ def classify_document(file_path: str) -> dict:
         return {
             "document_type": "Unknown",
             "confidence": 0.0,
-            "reason": "No readable text could be extracted from the document"
+            "reason": "No readable text could be extracted from the document",
+            "extracted_text": ""
         }
 
     # Step 3: Send all text directly to LLM — no keyword gates
     try:
-        return llm_classify(text)
+        result = llm_classify(text)
+        result["extracted_text"] = text
+        return result
     except json.JSONDecodeError:
         return {
             "document_type": "Unknown",
             "confidence": 0.0,
-            "reason": "LLM returned an unexpected response format"
+            "reason": "LLM returned an unexpected response format",
+            "extracted_text": text
         }
     except Exception as e:
         return {
             "document_type": "Unknown",
             "confidence": 0.0,
-            "reason": f"Classification failed: {str(e)}"
+            "reason": f"Classification failed: {str(e)}",
+            "extracted_text": text
         }
 
 

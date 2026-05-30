@@ -18,6 +18,38 @@ header {
     padding-top: 20px;
 }
 
+/* ========== HEADER TOP BAR (user + logout) ========== */
+.header-top {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 12px;
+}
+
+.header-user {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.logout-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.2);
+    color: white;
+    border: 1px solid rgba(255,255,255,0.4);
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+
+.logout-btn:hover {
+    background: rgba(255,255,255,0.35);
+}
+
 header h1 {
     font-size: 2.5rem;
     margin-bottom: 8px;
@@ -152,10 +184,11 @@ header p {
 
 .image-preview img {
     width: 100%;
-    max-height: 300px;
+    max-height: 400px;
     border-radius: 8px;
     border: 1px solid #ddd;
-    object-fit: cover;
+    object-fit: contain;
+    background: #f5f5f5;
 }
 
 /* ========== TEXT PREVIEW ========== */
@@ -422,32 +455,346 @@ header p {
         padding: 25px 15px;
     }
 }
-    to { transform: rotate(360deg); }
+
+/* ========== LOGIN PAGE ========== */
+.login-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
 }
 
-.hidden {
-    display: none;
+.login-card {
+    background: white;
+    border-radius: 16px;
+    padding: 48px 40px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    color: #333;
 }
 
-.result {
-    margin-top: 20px;
+.login-icon {
+    font-size: 2.8rem;
+    color: #667eea;
+    margin-bottom: 16px;
 }
 
-.progress {
-    background: #eee;
+.login-card h2 {
+    font-size: 1.7rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.login-subtitle {
+    font-size: 0.95rem;
+    color: #888;
+    margin-bottom: 28px;
+}
+
+.login-error {
+    background: #fff0f0;
+    border: 1px solid #ffb3b3;
+    color: #c0392b;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.login-field {
+    text-align: left;
+    margin-bottom: 18px;
+}
+
+.login-field label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 6px;
+}
+
+.login-field input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid #ddd;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.login-field input:focus {
+    border-color: #667eea;
+}
+
+.login-btn {
+    width: 100%;
+    padding: 13px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: opacity 0.2s;
+}
+
+.login-btn:hover {
+    opacity: 0.9;
+}
+
+/* ========== FILE LIST ========== */
+.file-list {
+    margin-top: 16px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    overflow: hidden;
+    max-height: 220px;
+    overflow-y: auto;
+}
+
+.file-list-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-bottom: 1px solid #f3f4f6;
+    font-size: 0.9rem;
+}
+
+.file-list-item:last-child { border-bottom: none; }
+
+.file-list-icon { color: #667eea; min-width: 20px; }
+
+.file-list-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #333;
+}
+
+.file-list-size { color: #999; font-size: 0.82rem; white-space: nowrap; }
+
+.file-list-status {
+    font-size: 0.82rem;
+    color: #888;
+    white-space: nowrap;
+    min-width: 100px;
+    text-align: right;
+}
+
+/* ========== BATCH PROGRESS ========== */
+.batch-progress {
+    margin: 20px 0;
+}
+
+.batch-progress-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: #667eea;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.batch-progress-bar {
+    width: 100%;
+    height: 10px;
+    background: #e5e7eb;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.batch-progress-fill {
+    height: 100%;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 5px;
+    transition: width 0.4s ease;
+}
+
+/* ========== RESULTS SECTION ========== */
+.results-section {
+    animation: slideIn 0.4s ease;
+}
+
+.results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.results-header h2 {
+    color: #667eea;
+    font-size: 1.4rem;
+}
+
+.export-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.export-btn:hover { opacity: 0.88; }
+
+/* ========== RESULTS TABLE ========== */
+.table-wrapper {
+    overflow-x: auto;
     border-radius: 10px;
-    height: 12px;
-    margin: 10px 0;
+    border: 1px solid #e5e7eb;
 }
 
-#progressBar {
-    height: 12px;
-    background: linear-gradient(90deg, #1d2671, #c33764);
-    width: 0%;
-    border-radius: 10px;
+.results-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
 }
 
-.reason {
-    font-style: italic;
-    margin-top: 10px;
+.results-table thead {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+}
+
+.results-table th {
+    padding: 12px 14px;
+    text-align: left;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.results-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid #f3f4f6;
+    vertical-align: middle;
+}
+
+.results-table tbody tr:last-child td { border-bottom: none; }
+
+.results-table tbody tr:hover { background: #f9fafb; }
+
+.col-num  { width: 40px; color: #999; text-align: center; }
+.col-file { max-width: 200px; word-break: break-word; }
+.col-type { white-space: nowrap; }
+.col-conf { width: 100px; }
+.col-reason { color: #555; font-size: 0.85rem; }
+
+.mini-conf { font-weight: 700; color: #333; margin-bottom: 4px; }
+.mini-bar  { background: #e5e7eb; border-radius: 3px; height: 6px; }
+
+/* ========== CLICKABLE ROW ========== */
+.clickable-row { cursor: pointer; }
+.clickable-row:hover { background: #f0f0ff !important; }
+.preview-hint { color: #aaa; font-size: 0.78rem; margin-left: 6px; }
+
+/* ========== PREVIEW MODAL ========== */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+.modal-overlay.hidden { display: none; }
+
+.modal-box {
+    background: white;
+    border-radius: 14px;
+    width: 100%;
+    max-width: 700px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+    animation: slideIn 0.2s ease;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 22px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 14px 14px 0 0;
+    color: white;
+}
+
+.modal-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 88%;
+}
+
+.modal-close {
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.2s;
+}
+.modal-close:hover { background: rgba(255,255,255,0.38); }
+
+.modal-body {
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.modal-preview img {
+    max-width: 100%;
+    max-height: 360px;
+    border-radius: 8px;
+    display: block;
+    margin: 0 auto;
+    object-fit: contain;
+}
+
+.modal-text-section h4 {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #667eea;
+    margin-bottom: 8px;
+}
+
+.modal-text-content {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 14px;
+    font-size: 0.84rem;
+    color: #444;
+    line-height: 1.65;
+    max-height: 160px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
 }
