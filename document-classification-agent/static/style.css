@@ -693,6 +693,8 @@ header p {
 .col-type { white-space: nowrap; }
 .col-conf { width: 100px; }
 .col-reason { color: #555; font-size: 0.85rem; }
+.col-saved { white-space: nowrap; }
+.saved-folder { font-size: 0.82rem; color: #667eea; font-weight: 500; }
 
 .mini-conf { font-weight: 700; color: #333; margin-bottom: 4px; }
 .mini-bar  { background: #e5e7eb; border-radius: 3px; height: 6px; }

@@ -25,7 +25,6 @@ DOCUMENT_TYPES = [
     "Claim Form",
     "Inspection Report",
     "Invoice",
-    "Policy Document",
     "Medical Bill",
     "Unknown"
 ]
@@ -43,7 +42,6 @@ Supported document types:
 - Claim Form: contains policy/claim number, patient or claimant info, incident or medical details, subscriber info
 - Inspection Report: contains inspection findings, surveyor/inspector details, property or damage assessment, four-point inspection
 - Invoice: contains invoice number, billing line items, price/amount columns, total charges, service fees
-- Policy Document: contains policy terms, coverage details, premium amounts, exclusions
 - Medical Bill: contains patient details, hospital or clinic charges, treatment item costs
 - Unknown: truly unrecognizable content, blank, or completely unrelated to insurance
 
@@ -54,6 +52,7 @@ Instructions:
   * Invoice → look for line items with prices and a TOTAL
   * Claim Form → look for claimant/patient name, policy number, incident description
   * Inspection Report → look for inspection, surveyor, property condition, four-point
+  * Medical Bill → look for patient name, hospital/clinic name, treatment charges
 - Only return Unknown if the readable text gives no clear signal at all.
 - Confidence score must reflect the STRENGTH OF EVIDENCE, not just whether you can classify it.
   Use this scale strictly:

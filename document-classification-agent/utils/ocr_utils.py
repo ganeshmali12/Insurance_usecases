@@ -1,6 +1,6 @@
 import pytesseract
 import pdfplumber
-import fitz  # PyMuPDF — self-contained PDF renderer, no Poppler needed
+import fitz  # PyMuPDF — self-contained PDF renderer
 from PIL import Image, ImageOps
 import io
 import os
